@@ -37,11 +37,6 @@ void SetAll()
 	printf("%d\n", count);
 }
 
-void Hang()
-{
-	while (!GetAsyncKeyState(VK_END));
-}
-
 enum EEmoji
 {
 	HAPPY = 0,
@@ -103,20 +98,25 @@ void DrawAllBombs()
 				DrawBomb(x, y);
 }
 
-#include "features/AutoFlagger.h"
+void Hang()
+{
+	while (!GetAsyncKeyState(VK_END));
+}
 
 /*
 Runs actual hack & features.
 */
 void RunHack()
 {
-	Hooks::Init();
+	Hooks::Enable();
 
 	//DrawAllBombs();
 
 	//ClearAll();
 
 	Hang();
+
+	Hooks::Disable();
 }
 
 int WINAPI HackThread(HMODULE hModule)

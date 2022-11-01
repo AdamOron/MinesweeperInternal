@@ -152,27 +152,29 @@
     <ClCompile Include="src\features\MineCacher.cpp" />
     <ClCompile Include="src\features\MineProtector.cpp" />
     <ClCompile Include="src\features\AutoFlagger.cpp" />
-    <ClCompile Include="src\hooklib\disasm\disasm.cpp" />
-    <ClCompile Include="src\hooklib\hook.cpp" />
     <ClCompile Include="src\sdk\GridManager.cpp" />
     <ClCompile Include="src\sdk\Hooks.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
+    <ClCompile Include="src\trampy\disasm\disasm.cpp" />
+    <ClCompile Include="src\trampy\Trampy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\features\MineCacher.h" />
     <ClInclude Include="src\features\MineProtector.h" />
     <ClInclude Include="src\features\AutoFlagger.h" />
     <ClInclude Include="src\features\Feature.h" />
-    <ClInclude Include="src\hooklib\defs.h" />
-    <ClInclude Include="src\hooklib\disasm\disasm.h" />
-    <ClInclude Include="src\hooklib\disasm\instr\MOD_REG_RM.h" />
-    <ClInclude Include="src\hooklib\disasm\instr\OPCODE.h" />
-    <ClInclude Include="src\hooklib\disasm\instr\OPERAND.h" />
-    <ClInclude Include="src\hooklib\disasm\instr\SIB.h" />
-    <ClInclude Include="src\hooklib\hook.h" />
+    <ClInclude Include="src\\defs.h" />
     <ClInclude Include="src\sdk\GridManager.h" />
     <ClInclude Include="src\sdk\Hooks.h" />
     <ClInclude Include="src\sdk\Offsets.h" />
+    <ClInclude Include="src\trampy\disasm\disasm.h" />
+    <ClInclude Include="src\trampy\disasm\instr\ModRegRM.h" />
+    <ClInclude Include="src\trampy\disasm\instr\Opcode.h" />
+    <ClInclude Include="src\trampy\disasm\instr\OpcodeMaps.h" />
+    <ClInclude Include="src\trampy\disasm\instr\Operand.h" />
+    <ClInclude Include="src\trampy\disasm\instr\SIB.h" />
+    <ClInclude Include="src\trampy\Trampy.h" />
+    <ClInclude Include="src\trampy\TrampyDefs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -46,5 +46,10 @@ namespace Hooks
 	/*
 	Initialize all function pointers and hooks.
 	*/
-	void Init();
+	void Enable();
+
+	/*
+	Disable all function hooks.
+	*/
+	void Disable();
 }

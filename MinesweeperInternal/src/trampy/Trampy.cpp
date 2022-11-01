@@ -1,5 +1,7 @@
-#include "hook.h"
+#include "Trampy.h"
 #include <vector>
+#include "disasm/disasm.h"
+#include "TrampyDefs.h"
 
 /*
 The maximum size of a single instruction.
@@ -55,6 +57,10 @@ typedef struct _HOOK_DESCRIPTOR
 }
 HOOK_DESCRIPTOR, *PHOOK_DESCRIPTOR;
 
+/*
+Store all hooks in a global vector.
+This is bad practice to an extent, but serves me well at this stage.
+*/
 std::vector<HOOK_DESCRIPTOR> g_Hooks;
 
 /*
@@ -84,7 +90,7 @@ Creates a Hook desriptor.
 @param ppTrampoline, pointer to the destination trampoline function.
 @return pointer to the newly created Hook within the Hook list.
 */
-PHOOK_DESCRIPTOR CreateHook(LPVOID pOriginal, LPVOID pHooked, LPVOID *ppTrampoline)
+PHOOK_DESCRIPTOR Trampy::CreateHook(LPVOID pOriginal, LPVOID pHooked, LPVOID *ppTrampoline)
 {
     /* Push empty HOOK_DESCRIPTOR to Hook list */
     g_Hooks.push_back({ });
@@ -300,7 +306,7 @@ Enable the Hook, i.e. make it functional.
 @param pHook, the Hook's descriptor.
 @return TRUE if the function succeeds, FALSE if it fails.
 */
-BOOL EnableHook(PHOOK_DESCRIPTOR pHook)
+BOOL Trampy::EnableHook(PHOOK_DESCRIPTOR pHook)
 {
     /* Create Trampoline function, save pointer to it */
     LPVOID pTrampoline = CreateTrampoline(pHook);
@@ -332,7 +338,25 @@ BOOL EnableHook(PHOOK_DESCRIPTOR pHook)
     if (!WriteJmpToHook(pHook))
         return FALSE;
 
+    /* Mark the Hook as enabled */
+    pHook->bEnabled = TRUE;
+
     return TRUE;
+}
+
+/*
+Enable all Hooks, i.e. make them all functional.
+@return TRUE if all Hooks were enabled successfully, FALSE otherwise.
+*/
+BOOL Trampy::EnableAllHooks()
+{
+    BOOL bEnabledAll = TRUE;
+
+    for (HOOK_DESCRIPTOR &hook : g_Hooks)
+        if (!EnableHook(&hook))
+            bEnabledAll = FALSE;
+
+    return bEnabledAll;
 }
 
 /*
@@ -340,10 +364,10 @@ Disable the Hook, i.e. revert to original state.
 @param pHook, the Hook's descriptor.
 @return TRUE if the Hook was succesfully disabled, FALSE otherwise.
 */
-BOOL DisableHook(PHOOK_DESCRIPTOR pHook)
+BOOL Trampy::DisableHook(PHOOK_DESCRIPTOR pHook)
 {
     /* If Hook isn't enabled, don't disable it */
-    if (pHook->bEnabled)
+    if (!pHook->bEnabled)
         return FALSE;
 
     /*
@@ -359,7 +383,31 @@ BOOL DisableHook(PHOOK_DESCRIPTOR pHook)
         return FALSE;
     }
 
+    /* Mark the Hook as disabled */
     pHook->bEnabled = FALSE;
 
     return TRUE;
+}
+
+/*
+Disable all Hooks, i.e. revert to original state.
+@return TRUE if all Hooks were disabled successfully, FALSE otherwise.
+*/
+BOOL Trampy::DisableAllHooks()
+{
+    /* Erase from g_Hooks vector */
+    g_Hooks.erase(
+        /* Construct iterator for all Hooks we want to erase */
+        std::remove_if(
+            /* From the beginning to the end of the vector */
+            g_Hooks.begin(), g_Hooks.end(),
+            /* Erase all Hooks that were successfully disabled */
+            [](HOOK_DESCRIPTOR &hook) { return DisableHook(&hook); }
+        ),
+        /* Erase all Hooks in the newly constructed iterator */
+        g_Hooks.end()
+    );
+
+    /* If g_Hooks is empty, all DisableHook calls were successful */
+    return g_Hooks.empty();
 }
